@@ -39,11 +39,12 @@ parser = argparse.ArgumentParser(prog="Attentive Diffusion Temporal Point Proces
 parser.add_argument('--log_dir', type=str, metavar='DIR', 
                     help='Directory where models and logs will be saved.', default='experiments/')
 parser.add_argument('--dataset_dir', type=str, metavar='DIR', default='./data/stackoverflow/',
-                    choices=['./data/mooc/', './data/retweet/', './data/stackoverflow/', './data/synthetic_n5_c0.2/', './data/yelp/'],
+                    choices=['./data/mooc/', './data/retweet/', './data/stackoverflow/',
+                             './data/synthetic_n5_c0.2/', './data/yelp/', './data/kaggle_conv_inc/'],
                     help='Directory for dataset.')
 
 # Training
-parser.add_argument('--max_epoch', type=int, metavar='NUM', default=100,
+parser.add_argument('--max_epoch', type=int, metavar='NUM', default=500,
                     help='The maximum epoch number for training.')
 parser.add_argument('--lr', type=int, metavar='RATE', default=1e-3,
                     help='The leanring rate for training.')
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     args['mean_log_dt'] = mean_log_dt
     args['std_log_dt'] = std_log_dt
     args['max_dt'] = max_dt
-    
+
     if args['experiment_name'] == None:
         args['experiment_name'] = '{}_{}_{}_{}'.format(args['hist_enc'],
                                                        args['prob_dec'],
@@ -139,5 +140,7 @@ if __name__ == '__main__':
     )
 
     trainer.train()
+    pickle.dump(trainer, open(args['dataset_dir'] + 'trainer_model_enc%s_dec%s.pkl' % (
+        args['hist_enc'], args['prob_dec']), 'wb'))
     trainer.final_test(n=1)
-    trainer.plot_similarity('type_similarity_sof')
+    #trainer.plot_similarity('type_similarity_sof')

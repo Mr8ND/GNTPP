@@ -90,7 +90,7 @@ class Trainer:
         self._model.load_state_dict(checkpoint['model_state_dict'])
         self._logger.info("Loaded model at {}".format(epoch_num))
     
-    def train(self, log_every=1, test_every_n_epochs=10, save_model=True, patience=100):
+    def train(self, log_every=1, test_every_n_epochs=1, save_model=True, patience=100):
         
         message = "the number of trainable parameters: " + str(utils.count_parameters(self._model))
         self._logger.info(message)
@@ -185,7 +185,7 @@ class Trainer:
                     self._logger.warning('Early stopping at epoch: %d' % epoch_num, 'the best epoch is: %d' % best_epoch)
                     break
 
-    def _evaluate(self, dataset, epoch_num=0, load_model=False, metrics=['LOG_LOSS'], plot_qq=None):
+    def _evaluate(self, dataset, epoch_num=0, load_model=False, metrics=['LOG_LOSS', 'MAPE'], plot_qq=None):
         if load_model == True:
             self.load_model(epoch_num)
         
@@ -207,9 +207,10 @@ class Trainer:
                         report_metric[metric] += value.detach()
                     else:
                         report_metric[metric].append(value)
-                    with torch.cuda.device('cuda:{}'.format(self._device.index)):
-                            torch.cuda.empty_cache()
-                    del value
+                    if torch.cuda.is_available():
+                        with torch.cuda.device('cuda:{}'.format(self._device.index)):
+                                torch.cuda.empty_cache()
+                        del value
                 
                 self.optimizer.zero_grad()
 

@@ -85,8 +85,21 @@ class SequenceDataset(data_utils.Dataset):
     def process_data(self):
         # print('processing dataset and saving in {}...'.format(self.processed_path))
 
+        # Numpy arrays of numpy arrays. The length is the number of samples
+        # seq_times = include the timestamps of each events
+        # seq_types = include the type of each event
+        # seq_lengths = single array with the length of each sample
+        # seq_dts = same as seq_times but with inter-arrival times. First one is left untouched
+        # max_t = maximum time, single float
+        # event_type_num = total event types, single integer
+
         self.seq_times, self.seq_types, self.seq_lengths, self.seq_dts, self.max_t, self.event_type_num = \
             self.data['timestamps'], self.data['types'], self.data['lengths'], self.data['intervals'], self.data['t_max'], self.data['event_type_num']
+
+        # Remove the sequences with only one events in length
+        self.seq_times = [el for el in self.seq_times if len(el) > 1]
+        self.seq_dts = [el for el in self.seq_dts if len(el) > 1]
+        self.seq_types = [el for el in self.seq_types if len(el) > 1]
         
         self.max_t = np.concatenate(self.data['timestamps']).max()
         self.seq_lengths = torch.Tensor(self.seq_lengths)
