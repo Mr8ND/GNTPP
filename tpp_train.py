@@ -74,7 +74,7 @@ parser.add_argument('--attention_heads', type=int, metavar='SIZE', default=4,
                     help='Attention heads for the attention history encoder, which should be set as a divisor of embed size.')          
 
 ###
-parser.add_argument('--gpu', type=int, metavar='DEVICE', default=6,
+parser.add_argument('--gpu', type=int, metavar='DEVICE', default=0,
                     help='Gpu to use for training.')
 parser.add_argument('--seed', type=int, metavar='SEED', default=42,
                     help='Random seed for training.')
